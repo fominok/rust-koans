@@ -15,7 +15,7 @@ fn implementing_traits() {
         fn full_name(&self) -> String;
     }
 
-    impl Person {
+    impl HasName for Person {
         fn full_name(&self) -> String {
             format!("{} {}", self.first_name, self.last_name)
         }
@@ -57,6 +57,10 @@ fn implementing_traits2() {
             self.level += 1;
             self.level
         }
+
+        fn print_level(&self) {
+            println!("{}", self.level)
+        }
     }
 
     let mut durz = Character {
@@ -77,6 +81,16 @@ fn creating_traits() {
     let num_one: u16 = 3;
     let num_two: u16 = 4;
 
+    trait IsEvenOrOdd {
+        fn is_even(&self) -> bool;
+    }
+
+    impl IsEvenOrOdd for u16 {
+        fn is_even(&self) -> bool {
+            self % 2 == 0
+        }
+    }
+
     fn asserts<T: IsEvenOrOdd>(x: T, y: T) {
         assert!(!x.is_even());
         assert!(y.is_even());
@@ -89,12 +103,14 @@ fn creating_traits() {
 // Using this pattern, we can use generic types and still ensure type safety.
 #[test]
 fn trait_constraints_on_structs() {
+    use std::cmp::PartialOrd;
+
     struct Language<T> {
         stable_version: T,
         latest_version: T,
     }
 
-    impl<__> Language<T> {
+    impl<T : PartialOrd> Language<T> {
         fn is_stable(&self) -> bool {
             self.latest_version >= self.stable_version
         }
@@ -125,7 +141,7 @@ fn where_clause() {
         }
     }
 
-    fn asserts<T>(x: T, y: T) {
+    fn asserts<T>(x: T, y: T) where T : IsEvenOrOdd {
         assert!(!x.is_even());
         assert!(y.is_even());
     }
@@ -143,7 +159,7 @@ fn default_functions() {
     trait IsEvenOrOdd {
         fn is_even(&self) -> bool;
         fn is_odd(&self) -> bool {
-            __
+           !self.is_even()
         }
     }
 
@@ -176,7 +192,7 @@ fn inheritance() {
 
     impl<T: PartialOrd> PartialOrd for Bawks<T> {
         fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-            __
+            self.thingy.partial_cmp(&other.thingy)
         }
     }
 
